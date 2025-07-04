@@ -1,5 +1,6 @@
 package com.hotelapp.hotel.service;
 
+import com.hotelapp.hotel.dto.HotelRequestDTO;
 import com.hotelapp.hotel.model.Hotel;
 import com.hotelapp.hotel.repository.HotelRepository;
 import lombok.RequiredArgsConstructor;
@@ -21,15 +22,19 @@ public class HotelService {
         return hotelRepository.findById(id);
     }
 
-    public Hotel createHotel(Hotel hotel) {
+    public Hotel createHotel(HotelRequestDTO dto) {
+        Hotel hotel = new Hotel();
+        hotel.setName(dto.getName());
+        hotel.setAddress(dto.getAddress());
+        hotel.setStarRating(dto.getStarRating());
         return hotelRepository.save(hotel);
     }
 
-    public Hotel updateHotel(Long id, Hotel updatedHotel) {
+    public Hotel updateHotel(Long id, HotelRequestDTO dto) {
         return hotelRepository.findById(id).map(hotel -> {
-            hotel.setName(updatedHotel.getName());
-            hotel.setAddress(updatedHotel.getAddress());
-            hotel.setStarRating(updatedHotel.getStarRating());
+            hotel.setName(dto.getName());
+            hotel.setAddress(dto.getAddress());
+            hotel.setStarRating(dto.getStarRating());
             return hotelRepository.save(hotel);
         }).orElseThrow(() -> new RuntimeException("Hotel not found with id: " + id));
     }

@@ -1,7 +1,9 @@
 package com.hotelapp.hotel.controller;
 
+import com.hotelapp.hotel.dto.RoomRequestDTO;
 import com.hotelapp.hotel.model.Room;
 import com.hotelapp.hotel.service.RoomService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -20,13 +22,13 @@ public class RoomController {
     }
 
     @PostMapping
-    public Room createRoom(@RequestBody Room room) {
-        return roomService.createRoom(room);
+    public Room createRoom(@Valid @RequestBody RoomRequestDTO roomDto) {
+        return roomService.createRoom(roomDto);
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Room> updateRoom(@PathVariable Long id, @RequestBody Room room) {
-        return ResponseEntity.ok(roomService.updateRoom(id, room));
+    public ResponseEntity<Room> updateRoom(@PathVariable Long id, @Valid @RequestBody RoomRequestDTO roomDto) {
+        return ResponseEntity.ok(roomService.updateRoom(id, roomDto));
     }
 
     @DeleteMapping("/{id}")
