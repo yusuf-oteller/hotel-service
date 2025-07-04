@@ -27,14 +27,3 @@ logging:
     com.hotelapp: DEBUG
     org.hibernate.SQL: DEBUG
     org.hibernate.type.descriptor.sql.BasicBinder: TRACE
-
----
-spring:
-  config:
-    activate:
-      on-profile: docker
-  datasource:
-    url: jdbc:postgresql://postgres:5432/hoteldb
-
-server:
-  port: 8080

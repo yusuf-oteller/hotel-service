@@ -5,10 +5,10 @@ services:
   hotel-service:
     build: .
     depends_on:
-      postgres:
+      hotel-db:
         condition: service_healthy
     environment:
-      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/hoteldb
+      SPRING_DATASOURCE_URL: jdbc:postgresql://hotel-db:5432/hoteldb
       SPRING_DATASOURCE_USERNAME: hotelapp
       SPRING_DATASOURCE_PASSWORD: password
       SPRING_PROFILES_ACTIVE: docker
@@ -19,6 +19,29 @@ services:
     command: ["java", "-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:5005", "-jar", "app.jar"]
     networks:
       - hotel-network
+
+  hotel-db:
+    image: postgres:17-alpine
+    container_name: hotel-db
+    restart: always
+    environment:
+      POSTGRES_DB: hoteldb
+      POSTGRES_USER: hotelapp
+      POSTGRES_PASSWORD: password
+    ports:
+      - "5434:5432"
+    volumes:
+      - hotel-db-data:/var/lib/postgresql/data
+    networks:
+      - hotel-network
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U hotelapp" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+volumes:
+  hotel-db-data:
 
 networks:
   hotel-network:
