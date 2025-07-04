@@ -1,45 +1,43 @@
 package com.hotelapp.hotel.service;
 
 import com.hotelapp.hotel.dto.RoomRequestDTO;
+import com.hotelapp.hotel.dto.RoomResponseDTO;
+import com.hotelapp.hotel.mapper.RoomMapper;
 import com.hotelapp.hotel.model.Room;
 import com.hotelapp.hotel.repository.RoomRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Optional;
 
-@Service
 @RequiredArgsConstructor
+@Service
 public class RoomService {
     private final RoomRepository roomRepository;
+    private final RoomMapper roomMapper;
 
-    public List<Room> getRoomsByHotelId(Long hotelId) {
-        return roomRepository.findByHotelId(hotelId);
+    public List<RoomResponseDTO> getRoomsByHotelId(Long hotelId) {
+        return roomRepository.findByHotelId(hotelId)
+                .stream()
+                .map(roomMapper::toResponseDTO)
+                .toList();
     }
 
-    public Optional<Room> getRoomById(Long id) {
-        return roomRepository.findById(id);
+    public RoomResponseDTO createRoom(RoomRequestDTO dto) {
+        Room room = roomMapper.toEntity(dto);
+        Room saved = roomRepository.save(room);
+        return roomMapper.toResponseDTO(saved);
     }
 
-    public Room createRoom(RoomRequestDTO dto) {
-        Room room = new Room();
-        room.setHotelId(dto.getHotelId());
-        room.setRoomNumber(dto.getRoomNumber());
-        room.setCapacity(dto.getCapacity());
-        room.setPricePerNight(dto.getPricePerNight());
-        return roomRepository.save(room);
+    public RoomResponseDTO updateRoom(Long id, RoomRequestDTO dto) {
+        return roomRepository.findById(id)
+                .map(room -> {
+                    roomMapper.updateRoomFromDto(room, dto);
+                    Room updated = roomRepository.save(room);
+                    return roomMapper.toResponseDTO(updated);
+                })
+                .orElseThrow(() -> new RuntimeException("Room not found with id: " + id));
     }
-
-    public Room updateRoom(Long id, RoomRequestDTO dto) {
-        return roomRepository.findById(id).map(room -> {
-            room.setRoomNumber(dto.getRoomNumber());
-            room.setCapacity(dto.getCapacity());
-            room.setPricePerNight(dto.getPricePerNight());
-            return roomRepository.save(room);
-        }).orElseThrow(() -> new RuntimeException("Room not found with id: " + id));
-    }
-
 
     public void deleteRoom(Long id) {
         roomRepository.deleteById(id);

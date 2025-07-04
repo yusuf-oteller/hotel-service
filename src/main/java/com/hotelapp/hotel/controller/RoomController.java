@@ -1,7 +1,7 @@
 package com.hotelapp.hotel.controller;
 
 import com.hotelapp.hotel.dto.RoomRequestDTO;
-import com.hotelapp.hotel.model.Room;
+import com.hotelapp.hotel.dto.RoomResponseDTO;
 import com.hotelapp.hotel.service.RoomService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -14,21 +14,23 @@ import java.util.List;
 @RequestMapping("/api/v1/rooms")
 @RequiredArgsConstructor
 public class RoomController {
+
     private final RoomService roomService;
 
     @GetMapping("/{hotelId}")
-    public List<Room> getRoomsByHotel(@PathVariable Long hotelId) {
-        return roomService.getRoomsByHotelId(hotelId);
+    public ResponseEntity<List<RoomResponseDTO>> getRoomsByHotel(@PathVariable Long hotelId) {
+        return ResponseEntity.ok(roomService.getRoomsByHotelId(hotelId));
     }
 
     @PostMapping
-    public Room createRoom(@Valid @RequestBody RoomRequestDTO roomDto) {
-        return roomService.createRoom(roomDto);
+    public ResponseEntity<RoomResponseDTO> createRoom(@RequestBody @Valid RoomRequestDTO roomRequestDTO) {
+        return ResponseEntity.ok(roomService.createRoom(roomRequestDTO));
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Room> updateRoom(@PathVariable Long id, @Valid @RequestBody RoomRequestDTO roomDto) {
-        return ResponseEntity.ok(roomService.updateRoom(id, roomDto));
+    public ResponseEntity<RoomResponseDTO> updateRoom(@PathVariable Long id,
+                                                      @RequestBody @Valid RoomRequestDTO roomRequestDTO) {
+        return ResponseEntity.ok(roomService.updateRoom(id, roomRequestDTO));
     }
 
     @DeleteMapping("/{id}")
